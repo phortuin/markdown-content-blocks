@@ -23,7 +23,7 @@ console.log('Hello World');
 
 Here be text
 
-![](https://i.imgur.com/p66zLsr.jpg "")
+![](https://i.imgur.com/p66zLsr.jpg)
 `
 
 test('Parses markdown', t => {
