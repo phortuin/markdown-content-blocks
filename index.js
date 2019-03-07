@@ -34,29 +34,29 @@ function isCode(extension) {
 }
 
 function codeBlock(language, content) {
-	return `\`\`\`${language}\n${content}\n\`\`\`\n`
+	return `\`\`\`${language}\n${content}\n\`\`\``
 }
 
 function image(url, alt, title) {
-	return `![${alt}](${url} "${title}")`
+	return `![${alt}](${url}${title ? ` "${title}"` : ''})`
 }
 
 function unwrap(string) {
-	return string ? string.slice(1, -1) : ''
+	return string ? string.slice(1, -1) : null
 }
 
 function analyzeBlock(string) {
-	let matches = string.match(/(.+)\.([\S]+)\s*(["\(].+["\)])?/m)
+	let matches = string.match(/(.+\.([\S]+))\s*(["\(].+["\)])?/m)
 	if (matches) {
-		let [ fullMatch, filename, extension, title ] = matches
+		let [ match, path, extension, title ] = matches
 		if (isImage(extension)) {
-			return { type: 'replace', block: string, replacement: image(`${filename}.${extension}`, '', unwrap(title)) }
+			return { match, path, replaceWith: content => image(path, '', unwrap(title)) }
 		}
 		if (isText(extension)) {
-			return { type: 'text', block: string, filename: `${filename}.${extension}` }
+			return { match, path, replaceWith: content => content }
 		}
 		if (isCode(extension)) {
-			return { type: 'code', block: string, filename: `${filename}.${extension}`, replacement: content => codeBlock(languages[extension], content) }
+			return { match, path, replaceWith: content => codeBlock(languages[extension], content) }
 		}
 	}
 	return string
@@ -71,18 +71,8 @@ module.exports = function replaceContentBlocks(markdown, files) {
 	let regex = /^\/(.+)$/gm
 	let results = []
 	while ((results = regex.exec(markdown)) !== null) {
-		let contentBlock = analyzeBlock(results[1])
-		switch (contentBlock.type) {
-			case 'replace':
-				markdown = markdown.replace(`/${contentBlock.block}`, contentBlock.replacement)
-				break
-			case 'text':
-				markdown = markdown.replace(`/${contentBlock.block}`, `${files[contentBlock.filename]}\n`)
-				break
-			case 'code':
-				markdown = markdown.replace(`/${contentBlock.block}`, contentBlock.replacement(files[contentBlock.filename]))
-				break
-		}
+		let block = analyzeBlock(results[1])
+		markdown = markdown.replace(`/${block.match}`, block.replaceWith(files[block.path]) + '\n')
 	}
-	return markdown
+	return markdown.replace(/\n{2,}$/g, '\n') // replace latest multiple newlines with just the one
 }
