@@ -16,32 +16,50 @@ const create = () => {
 	}
 
 	contentBlocks.replace = (markdown, files) => {
-		traverseBlocks(markdown, (block, match) => {
+		getBlocks(markdown).forEach(block => {
 			let content = files[block.path]
-			markdown = markdown.replace(match, getContent(block, content))
+			markdown = markdown.replace(block.match, block.replacer(content))
 		})
-		return markdown.replace(/\n{2,}$/, '\n') // replace last multiple newlines with just one
+		return markdown.replace(/\n{2,}$/, '\n')
 	}
 
 	contentBlocks.getFiles = markdown => {
-		let files = []
-		traverseBlocks(markdown, block => {
-			if (!block.isImage) {
-				files.push(block.path)
-			}
-		})
-		return files
+		return getBlocks(markdown)
+			.filter(block => !block.isImage)
+			.map(block => block.path)
 	}
 
-	function getContent(block, content) {
-		if (block.hasOwnProperty('replacer')) {
-			if (typeof block.replacer === 'function') {
-				content = block.replacer(content)
-			} else {
-				content = block.replacer
+	function getBlocks(markdown) {
+		let regex = /^\/.+$/gm
+		let blocks = []
+		while ((results = regex.exec(markdown)) !== null) {
+			let block = populateBlock(results[0])
+			blocks.push(block)
+		}
+		return blocks
+	}
+
+	function populateBlock(blockString) {
+		let matches = blockString.match(/\/(.+\.([\S]+))\s*(["\(].+["\)])?/m)
+		let block = {}
+		if (matches) {
+			let [ match, path, extension, title ] = matches
+			let isImage = imageExtensions.includes(extension)
+			let isCode = Object.keys(languages).includes(extension)
+			block = {
+				match,
+				path,
+				extension,
+				title,
+				isImage,
+				replacer: content => {
+					if (isImage) return `![](${block.path} "${sanitizeTitle(block.title)}")\n`
+					if (isCode) return `\`\`\`${languages[block.extension]}\n${content}\n\`\`\`\n`
+					return `${content}\n`
+				}
 			}
 		}
-		return `${content}\n`
+		return block
 	}
 
 	function sanitizeTitle(title) {
@@ -50,40 +68,6 @@ const create = () => {
 		} else {
 			return ''
 		}
-	}
-
-	function traverseBlocks(markdown, fn) {
-		let regex = /^\/.+$/gm
-		let results = []
-		while ((results = regex.exec(markdown)) !== null) {
-			let match = results[0]
-			let block = analyzeBlock(match)
-			fn(block, match)
-		}
-	}
-
-	function analyzeBlock(string) {
-		let matches = string.match(/\/(.+\.([\S]+))\s*(["\(].+["\)])?/m)
-		if (matches) {
-			let [ match, path, extension, title ] = matches
-			let block = {
-				match,
-				path,
-				extension,
-				isCode: Object.keys(languages).includes(extension),
-				isImage: imageExtensions.includes(extension),
-			}
-			if (block.isImage) {
-				title = sanitizeTitle(title)
-				title = block.title ? ` "${block.title}"` : ''
-				block.replacer = `![](${block.path}${title})`
-			}
-			if (block.isCode) {
-				block.replacer = content => `\`\`\`${languages[block.extension]}\n${content}\n\`\`\``
-			}
-			return block
-		}
-		return string
 	}
 
 	return contentBlocks
