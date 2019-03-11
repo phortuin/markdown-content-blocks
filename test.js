@@ -1,12 +1,12 @@
 const test = require('tape')
 const contentBlocks = require('./')
 
-const files = {
+const replacements = {
 	'example.js': `console.log('Hello World');`,
 	'moretext.txt': 'Here be text'
 }
 
-const source = `
+const markdown = `
 # Title
 
 /example.js
@@ -26,17 +26,17 @@ Here be text
 ![](https://i.imgur.com/p66zLsr.jpg "")
 `
 
-const fileList = [
+const blocks = [
 	'example.js',
 	'moretext.txt',
 ]
 
 test('Parses markdown', t => {
 	t.plan(1)
-	t.equal(contentBlocks(source, files), output)
+	t.equal(contentBlocks(markdown, replacements), output)
 })
 
-test('Gets required file list', t => {
+test('Gets list of required content blocks', t => {
 	t.plan(1)
-	t.deepEqual(contentBlocks.getFiles(source), fileList)
+	t.deepEqual(contentBlocks.getBlocks(markdown), blocks)
 })

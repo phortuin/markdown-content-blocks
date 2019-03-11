@@ -23,12 +23,12 @@ let source = `
 /https://i.imgur.com/p66zLsr.jpg
 `
 
-let files = {
+let blocks = {
 	'example.js': `console.log('Hello World');`,
 	'moretext.txt': 'Here be text'
 }
 
-let markdown = contentBlocks(source, files)
+let markdown = contentBlocks(source, blocks)
 
 // # Title
 //
@@ -43,9 +43,9 @@ let markdown = contentBlocks(source, files)
 
 ## API
 
-### contentBlocks(markdown, files)
+### contentBlocks(markdown, blocks)
 
-### contentBlocks.replace(markdown, files)
+### contentBlocks.replace(markdown, blocks)
 
 Returns a Markdown string.
 
@@ -55,27 +55,27 @@ Type: `string`
 
 Markdown string to be parsed.
 
-#### files
+#### blocks
 
 Type: `object`
 
-Key/value pairs where the key is the file name or path of the content block that should be replaced; value is the replacement value:
+Key/value pairs where the key is the content block (a file name or path) that should be replaced; value is the replacement value:
 
 ```javascript
-let files = {
+let blocks = {
 	'example.js': `console.log('Hello World');`,
 	'moretext.txt': 'Here be text'
 }
 ```
 
-### contentBlocks.getFiles(markdown)
+### contentBlocks.getBlocks(markdown)
 
-Returns an array of file names or paths that were found as content blocks in the given Markdown string.
+Returns an array of content blocks (file names or paths) that were found in the given Markdown string.
 
 **Note:** content blocks that appear to be images are ignored.
 
 ```javascript
-let files = contentBlocks.getFiles(source) //=> ['example.js', 'moretext.txt']
+let blocks = contentBlocks.getBlocks(source) //=> ['example.js', 'moretext.txt']
 ```
 
 #### markdown
@@ -84,10 +84,10 @@ Type: `string`
 
 ## Notes
 
-- Doesn’t embed `.csv` files as tables
+- Doesn’t embed `.csv` content blocks as tables
 - Doesn’t syntax highlight everything mentioned in [iA’s spec](https://github.com/iainc/Markdown-Content-Blocks/blob/develop/Languages.json) (instead, it does most of what [Prism.js](https://prismjs.com/#languages-list) supports)
 - Replaces anything resembling an image URL with an image block `![]()` and optionally empty title. No `alt` text is supported as of now; the iA Writer 'spec' is lacking in this regard. Therefore no source file is needed for an image block, as it is regarded to contain a live image URL.
-- Ignores titles for code blocks, as there is no Markdown syntax for titles/captions for (fenced) code blocks. Same goes for text files (`.md` and `.txt`).
+- Ignores titles for code blocks, as there is no Markdown syntax for titles/captions for (fenced) code blocks. Same goes for text blocks (`.md` and `.txt`).
 
 ## License
 [MIT](license) © [Anne Fortuin](https://phortuin.nl/)

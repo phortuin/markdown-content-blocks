@@ -11,19 +11,19 @@ const languages = {
 
 const create = () => {
 
-	function contentBlocks(markdown, files) {
-		return contentBlocks.replace(markdown, files)
+	function contentBlocks(markdown, blocks) {
+		return contentBlocks.replace(markdown, blocks)
 	}
 
-	contentBlocks.replace = (markdown, files) => {
+	contentBlocks.replace = (markdown, blocks) => {
 		getBlocks(markdown).forEach(block => {
-			let content = files[block.path]
+			let content = blocks[block.path]
 			markdown = markdown.replace(block.match, block.replacer(content))
 		})
 		return markdown.replace(/\n{2,}$/, '\n')
 	}
 
-	contentBlocks.getFiles = markdown => {
+	contentBlocks.getBlocks = markdown => {
 		return getBlocks(markdown)
 			.filter(block => !block.isImage)
 			.map(block => block.path)
