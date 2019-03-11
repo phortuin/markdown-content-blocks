@@ -4,7 +4,13 @@
   "description": "Parses content blocks into Markdown",
   "keywords": [
     "markdown",
-    "content block"
+    "content",
+    "block",
+    "content block",
+    "parse",
+    "replace",
+    "transclude",
+    "transclusion"
   ],
   "license": "MIT",
   "homepage": "https://github.com/phortuin/markdown-content-blocks",
