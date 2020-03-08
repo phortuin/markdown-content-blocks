@@ -80,7 +80,7 @@ Type: `object`
 Type: `string`  
 Default: `/`
 
-Sets the path that local images will be prefixed with. Will make sure it is a valid path, either relative (without leading slash) or absolute.
+Sets the path that local images will be prefixed with. The image’s URI is prefixed as you configured it, so omit a leading slash for relative paths.
 
 ```javascript
 let source = `
