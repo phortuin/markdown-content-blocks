@@ -18,6 +18,12 @@ const markdown = `
 /https://i.imgur.com/p66zLsr.jpg
 `
 
+const markdownLocalImage = `
+# Title
+
+/mylogo.jpg
+`
+
 const output = `
 # Title
 
@@ -40,10 +46,26 @@ console.log('Hello World');
 ![](https://i.imgur.com/p66zLsr.jpg "")
 `
 
+const outputLocalImage = `
+# Title
+
+![](/mylogo.jpg "")
+`
+
+const outputLocalImageAlternate = `
+# Title
+
+![](/media/mylogo.jpg "")
+`
+
 const blocks = [
 	'example.js',
 	'moretext.txt',
 ]
+
+const options = {
+	imagePath: '/media'
+}
 
 test('Parses markdown', t => {
 	t.plan(1)
@@ -57,5 +79,11 @@ test('Gets list of required content blocks', t => {
 
 test('Removes content block from markdown if no content is given', t => {
 	t.plan(1)
-	t.deepEqual(contentBlocks(markdown, partialReplacements), alternateOutput)
+	t.equal(contentBlocks(markdown, partialReplacements), alternateOutput)
+})
+
+test('Local image gets build folder path prefix', t => {
+	t.plan(2)
+	t.equal(contentBlocks(markdownLocalImage, {}), outputLocalImage)
+	t.equal(contentBlocks(markdownLocalImage, {}, options), outputLocalImageAlternate)
 })

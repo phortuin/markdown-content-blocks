@@ -1,3 +1,5 @@
+const { join: joinPath } = require('path')
+
 const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'tif', 'tiff', 'svg']
 const languages = {
 	sh: "bash",
@@ -8,15 +10,19 @@ const languages = {
 	php: "clike",
 	rb: "ruby",
 }
+const DEFAULTS = {
+	imagePath: '/'
+}
 
 const create = () => {
 
-	function contentBlocks(markdown, blocks) {
-		return contentBlocks.replace(markdown, blocks)
+	function contentBlocks(markdown, blocks, options) {
+		options = Object.assign({}, DEFAULTS, options)
+		return contentBlocks.replace(markdown, blocks, options)
 	}
 
-	contentBlocks.replace = (markdown, blocks) => {
-		getBlocks(markdown).forEach(block => {
+	contentBlocks.replace = (markdown, blocks, options) => {
+		getBlocks(markdown, options).forEach(block => {
 			let content = blocks[block.path]
 			markdown = markdown.replace(block.match, block.replacer(content))
 		})
@@ -29,17 +35,17 @@ const create = () => {
 			.map(block => block.path)
 	}
 
-	function getBlocks(markdown) {
+	function getBlocks(markdown, options = {}) {
 		let regex = /^\/.+$/gm
 		let blocks = []
 		while ((results = regex.exec(markdown)) !== null) {
-			let block = populateBlock(results[0])
+			let block = populateBlock(results[0], options.imagePath)
 			blocks.push(block)
 		}
 		return blocks
 	}
 
-	function populateBlock(blockString) {
+	function populateBlock(blockString, imagePath) {
 		let matches = blockString.match(/\/(.+\.([\S]+))\s*(["\(].+["\)])?/m)
 		let block = {}
 		if (matches) {
@@ -53,7 +59,7 @@ const create = () => {
 				title,
 				isImage,
 				replacer: content => {
-					if (isImage) return `![](${block.path} "${sanitizeTitle(block.title)}")\n`
+					if (isImage) return `![](${getImageURI(block, imagePath)} "${sanitizeTitle(block.title)}")\n\n`
 					if (isCode) return `\`\`\`${languages[block.extension]}\n${content}\n\`\`\`\n\n`
 					return content ? `${content}\n\n` : ''
 				}
@@ -68,6 +74,12 @@ const create = () => {
 		} else {
 			return ''
 		}
+	}
+
+	function getImageURI(block, imagePath) {
+		return block.path.startsWith('http') ?
+			block.path :
+			joinPath(imagePath, block.path)
 	}
 
 	return contentBlocks
