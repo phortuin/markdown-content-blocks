@@ -21,6 +21,7 @@ let source = `
 /example.js
 /moretext.txt
 /https://i.imgur.com/p66zLsr.jpg
+/localimage.jpg
 `
 
 let blocks = {
@@ -39,13 +40,15 @@ let markdown = contentBlocks(source, blocks)
 // Here be text
 //
 // ![](https://i.imgur.com/p66zLsr.jpg "")
+//
+// ![](/localimage.jpg "")
 ```
 
 ## API
 
-### contentBlocks(markdown, blocks)
+### contentBlocks(markdown, blocks, options?)
 
-### contentBlocks.replace(markdown, blocks)
+### contentBlocks.replace(markdown, blocks, options?)
 
 Returns a Markdown string.
 
@@ -68,6 +71,27 @@ let blocks = {
 }
 ```
 
+#### options
+
+Type: `object`
+
+##### imagePath
+
+Type: `string`  
+Default: `/`
+
+Sets the path that local images will be prefixed with. Will make sure it is a valid path, either relative (without leading slash) or absolute.
+
+```javascript
+let source = `
+/myfamily.jpg
+`
+
+let markdown = contentBlocks(source, {}, { imagePath: 'images' })
+
+// ![](images/myfamily.jpg "")
+```
+
 ### contentBlocks.getBlocks(markdown)
 
 Returns an array of content blocks (file names or paths) that were found in the given Markdown string.
@@ -86,7 +110,7 @@ Type: `string`
 
 - Doesn’t embed `.csv` content blocks as tables
 - Doesn’t syntax highlight everything mentioned in [iA’s spec](https://github.com/iainc/Markdown-Content-Blocks/blob/develop/Languages.json) (instead, it does most of what [Prism.js](https://prismjs.com/#languages-list) supports)
-- Replaces anything resembling an image URL with an image block `![]()` and optionally empty title. No `alt` text is supported as of now; the iA Writer 'spec' is lacking in this regard. Therefore no source file is needed for an image block, as it is regarded to contain a live image URL.
+- Formats anything resembling an image URL (`/myimage.jpg`) as an image block and optionally empty title `![](/myimage.jpg "")`). No `alt` text is supported as of now; the iA Writer 'spec' is lacking in this regard.
 - Ignores titles for code blocks, as there is no Markdown syntax for titles/captions for (fenced) code blocks. Same goes for text blocks (`.md` and `.txt`).
 
 ## License
