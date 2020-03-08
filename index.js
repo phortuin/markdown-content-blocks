@@ -54,8 +54,8 @@ const create = () => {
 				isImage,
 				replacer: content => {
 					if (isImage) return `![](${block.path} "${sanitizeTitle(block.title)}")\n`
-					if (isCode) return `\`\`\`${languages[block.extension]}\n${content}\n\`\`\`\n`
-					return `${content}\n`
+					if (isCode) return `\`\`\`${languages[block.extension]}\n${content}\n\`\`\`\n\n`
+					return content ? `${content}\n\n` : ''
 				}
 			}
 		}
