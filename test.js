@@ -36,6 +36,7 @@ const input = {
 	default: getFixture('in-default.md'),
 	localImage: getFixture('in-localimage.md'),
 	inline: getFixture('in-inline.md'),
+	reuse: getFixture('in-reuse.md'),
 }
 
 const output = {
@@ -44,6 +45,7 @@ const output = {
 	localImage: getFixture('out-localimage.md'),
 	localImageWithOptions: getFixture('out-localimage-with-options.md'),
 	inline: getFixture('out-inline.md'),
+	reuse: getFixture('out-reuse.md'),
 }
 
 test('Parses markdown', t => {
@@ -71,4 +73,9 @@ test('Content blocks cannot be inline other text', t => {
 	t.plan(2)
 	t.deepEqual(contentBlocks.getBlocks(input.inline), blocks.partial)
 	t.equal(contentBlocks(input.inline, replacements.all), output.inline)
+})
+
+test('Content blocks can be reused as much as I want', t => {
+	t.plan(1)
+	t.equal(contentBlocks(input.reuse, replacements.all), output.reuse)
 })
