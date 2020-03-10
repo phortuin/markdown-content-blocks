@@ -26,7 +26,9 @@ const create = () => {
 			let content = blocks[block.path]
 			markdown = markdown.replace(block.match, block.replacer(content))
 		})
-		return markdown.replace(/\n{2,}$/, '\n')
+		return markdown
+			.replace(/\n{3,}/g, '\n\n')  // whitespace >= 3 lines   => 2 lines
+			.replace(/\n{2,}$/, '\n')    // all trailing whitespace => 1 line
 	}
 
 	contentBlocks.getBlocks = markdown => {
@@ -36,7 +38,7 @@ const create = () => {
 	}
 
 	function getBlocks(markdown, options = {}) {
-		let regex = /^\/.+$/gm
+		let regex = /^\/.+\.[\S]+$/gm
 		let blocks = []
 		while ((results = regex.exec(markdown)) !== null) {
 			let block = populateBlock(results[0], options.imagePath)
@@ -46,7 +48,7 @@ const create = () => {
 	}
 
 	function populateBlock(blockString, imagePath) {
-		let matches = blockString.match(/\/(.+\.([\S]+))\s*(["\(].+["\)])?/m)
+		let matches = blockString.match(/\/(.+\.([\S]+))\s*(["\(].+["\)])?/)
 		let block = {}
 		if (matches) {
 			let [ match, path, extension, title ] = matches
