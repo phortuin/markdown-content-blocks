@@ -1,8 +1,9 @@
 # Title
 
-/example.js
 
 If I put /example.js inline, it shouldn’t be parsed
+
+/example.js
 
 And /moretext.txt should not be found as a content block
 

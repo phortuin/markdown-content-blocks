@@ -1,10 +1,10 @@
 # Title
 
+If I put /example.js inline, it shouldn’t be parsed
+
 ```javascript
 console.log('Hello World');
 ```
-
-If I put /example.js inline, it shouldn’t be parsed
 
 And /moretext.txt should not be found as a content block
 
