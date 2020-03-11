@@ -55,7 +55,7 @@ const create = () => {
 			let isImage = imageExtensions.includes(extension)
 			let isCode = Object.keys(languages).includes(extension)
 			block = {
-				match,
+				match: new RegExp(`^${match}$`, 'gm'),
 				path,
 				extension,
 				title,
