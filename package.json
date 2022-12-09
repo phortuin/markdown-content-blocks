@@ -1,6 +1,6 @@
 {
   "name": "markdown-content-blocks",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Parses content blocks into Markdown",
   "keywords": [
     "markdown",

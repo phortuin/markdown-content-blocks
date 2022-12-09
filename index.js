@@ -9,6 +9,8 @@ const languages = {
 	js: "javascript",
 	php: "clike",
 	rb: "ruby",
+	html: "html",
+	py: "python",
 }
 const DEFAULTS = {
 	imagePath: '/'
